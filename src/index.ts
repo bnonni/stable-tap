@@ -1,79 +1,37 @@
-import fs from 'fs';
-import https from 'https';
-import fetch from 'node-fetch';
-import config from './config.js';
+import readline from 'readline';
+import TapdClient from "./tapd-client.js";
 
-type TapdClientOptions = { NODE_NAME: string; VERBOSE: boolean };
-const tapConfig = config as any;
+const bob = new TapdClient({ NODE_NAME: 'BOB', VERBOSE: false });
+const alice = new TapdClient({ NODE_NAME: 'ALICE', VERBOSE: false });
 
-class TapdClient {
-    VERBOSE: boolean = false;
+const asset_id = (await alice.getAssets())[0].asset_genesis.asset_id;
+console.log(`Alice's USD-L Asset ID: ${asset_id}`);
 
-    NODE_NAME: string;
-    REST_HOST: string;
-    MACAROON_PATH: string;
-    REQUEST_OPTIONS: any = {
-        headers: { 'Content-Type': 'application/json' },
-        agent: new https.Agent({ rejectUnauthorized: false })
-    }
-    constructor({ NODE_NAME, VERBOSE }: TapdClientOptions = { NODE_NAME: 'ALICE', VERBOSE: false }) {
-        this.VERBOSE = VERBOSE;
-        this.NODE_NAME = NODE_NAME;
-        const NODE = tapConfig[NODE_NAME];
-        this.REST_HOST = NODE.REST_HOST;
-        this.MACAROON_PATH = NODE.MACAROON_PATH
-        this.REQUEST_OPTIONS.headers!['Grpc-Metadata-macaroon'] = fs.readFileSync(this.MACAROON_PATH).toString('hex');
-    }
+const { [asset_id]: { balance: aliceBalance } } = await alice.getAssetsBalance();
+console.log(`Alice's USD-L Asset Balance: ${aliceBalance}`);
 
-    async GET(path: string): Promise<any> {
-        try {
-            this.REQUEST_OPTIONS.method = 'GET';
-            const response = await fetch(`${this.REST_HOST}/${path}`, this.REQUEST_OPTIONS)
-            return await response.json();
-        } catch (error) {
-            console.error(error);
-        }
-    }
+const { encoded: tap_addrs } = await bob.getAddrs({ asset_id, amt: 100 });
+console.log(`Bob's USD-L Asset Receiving Addr: ${tap_addrs}`);
 
+const { transfer: { transfer_timestamp, anchor_tx_hash } } = await alice.sendAsset([tap_addrs]);
+console.log(`Alice's USD-L Asset Transfer to Bob: `, { transfer_timestamp, anchor_tx_hash });
 
-    async POST(path: string, body: any): Promise<any> {
-        try {
-            this.REQUEST_OPTIONS.method = 'POST';
-            this.REQUEST_OPTIONS.body = JSON.stringify(body);
-            const response = await fetch(`${this.REST_HOST}/${path}`, this.REQUEST_OPTIONS)
-            return await response.json();
-        } catch (error) {
-            console.error(error);
-        }
-    }
+async function waitForQuicMineEnter(): Promise<void> {
+    console.log('Click Quick Mine on your Polar UI and press Enter to continue ...');
+    return new Promise((resolve) => {
+        const rl = readline.createInterface({
+            input: process.stdin,
+            output: process.stdout,
+        });
 
-    async getAssets(): Promise<any> {
-        const response: { assets: { [key: string]: any } } = await this.GET('assets');
-        if (this.VERBOSE) console.log('getAssets response:', response.assets);
-        return response.assets;
-    }
-
-    async getAssetsBalance() {
-        const response: { asset_balances: { [key: string]: any } } = await this.GET('assets/balance?asset_id=true');
-        if (this.VERBOSE) console.log('getAssetsBalance response:', response.asset_balances);
-        return response.asset_balances;
-    }
-
-    async getAddrs(asset_id?: string) {
-        asset_id ??= (await this.getAssets())[0].asset_genesis.asset_id;
-        const response: any = await this.POST('addrs', { asset_id, amt: 100 });
-        if (this.VERBOSE) console.log('getAddrs response:', response);
-        return response;
-    }
-
-    async sendAsset(tap_addrs: string) {
-        if (!tap_addrs) {
-            throw new Error('tap_addrs is required');
-        }
-        const response: any = await this.POST('assets/send', { tap_addrs });
-        if (this.VERBOSE) console.log('sendAsset response:', response);
-        return response;
-    }
+        rl.question("Press Enter to continue...\n", () => {
+            rl.close();
+            resolve();
+        });
+    });
 }
 
-export default TapdClient;
+await waitForQuicMineEnter();
+
+const { [asset_id]: { balance: bobBalance } } = await bob.getAssetsBalance();
+console.log(`Bob's USD-L Asset Balance: ${bobBalance}`);
