@@ -1,9 +1,10 @@
 import fs from 'fs';
 import https from 'https';
-import fetch, { RequestInit } from 'node-fetch';
+import fetch from 'node-fetch';
 import config from './config.js';
 
 type TapdClientOptions = { NODE_NAME: string; VERBOSE: boolean };
+const tapConfig = config as any;
 
 class TapdClient {
     VERBOSE: boolean = false;
@@ -11,16 +12,14 @@ class TapdClient {
     NODE_NAME: string;
     REST_HOST: string;
     MACAROON_PATH: string;
-    REQUEST_OPTIONS: RequestInit = {
+    REQUEST_OPTIONS: any = {
         headers: { 'Content-Type': 'application/json' },
         agent: new https.Agent({ rejectUnauthorized: false })
     }
     constructor({ NODE_NAME, VERBOSE }: TapdClientOptions = { NODE_NAME: 'ALICE', VERBOSE: false }) {
         this.VERBOSE = VERBOSE;
         this.NODE_NAME = NODE_NAME;
-
-        const NODE = config[NODE_NAME];
-
+        const NODE = tapConfig[NODE_NAME];
         this.REST_HOST = NODE.REST_HOST;
         this.MACAROON_PATH = NODE.MACAROON_PATH
         this.REQUEST_OPTIONS.headers!['Grpc-Metadata-macaroon'] = fs.readFileSync(this.MACAROON_PATH).toString('hex');

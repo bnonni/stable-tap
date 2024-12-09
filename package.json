@@ -4,8 +4,9 @@
   "description": "A simple browser extension for receiving stablecoin taproot assets",
   "type": "module",
   "main": "dist/background.js",
+  "author": "Bryan Nonni (@bnonni)",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc -p tsconfig.json",
     "watch": "tsc --watch"
   },
   "dependencies": {
@@ -18,6 +19,7 @@
     "typescript": "^5.7.2"
   },
   "devDependencies": {
+    "@types/chrome": "^0.0.287",
     "@types/request": "^2.48.12"
   }
 }
