@@ -1,0 +1,13 @@
+{
+    "name": "StableTap",
+    "description": "A simple browser extension for receiving stablecoin taproot assets",
+    "version": "0.1.0",
+    "manifest_version": 1,
+    "permissions": [
+        "*://*/*"
+    ],
+    "action": {
+        "default_title": "StableTap Wallet",
+        "default_popup": "popup.html"
+    }
+}

@@ -76,20 +76,4 @@ class TapdClient {
     }
 }
 
-const alice = new TapdClient({ NODE_NAME: 'ALICE', VERBOSE: true });
-const bob = new TapdClient({ NODE_NAME: 'BOB', VERBOSE: true });
-
-const assetId = (await alice.getAssets())[0].asset_genesis.asset_id;
-console.log(`Alice's USD-L Asset ID: ${assetId}`);
-
-const { [assetId]: { balance: aliceBalance } } = await alice.getAssetsBalance();
-console.log(`Alice's USD-L Asset Balance: ${aliceBalance}`);
-
-const { encoded } = await bob.getAddrs(assetId);
-console.log(`Bob's USD-L Asset Receiving Addr: ${encoded}`);
-
-const transfer = await alice.sendAsset(encoded);
-console.log(`Alice's USD-L Asset Transfer to Bob: `, transfer);
-
-const { [assetId]: { balance: bobBalance } } = await bob.getAssetsBalance();
-console.log(`Bob's USD-L Asset Balance: ${bobBalance}`);
+export default TapdClient;

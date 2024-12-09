@@ -18,7 +18,8 @@
     "outDir": "dist"
   },
   "include": [
-    "src"
+    "src",
+    "manifest.json"
   ],
   "exclude": [
     "dist"
