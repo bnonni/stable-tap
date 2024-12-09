@@ -1,0 +1,23 @@
+{
+  "name": "stable-tap",
+  "version": "0.1.0",
+  "description": "A simple browser extension for receiving stablecoin taproot assets",
+  "type": "module",
+  "main": "dist/background.js",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch"
+  },
+  "dependencies": {
+    "@grpc/grpc-js": "^1.12.4",
+    "@grpc/proto-loader": "^0.7.13",
+    "@types/node": "^22.10.1",
+    "node-fetch": "^3.3.2",
+    "react-toastify": "^10.0.6",
+    "request": "^2.88.2",
+    "typescript": "^5.7.2"
+  },
+  "devDependencies": {
+    "@types/request": "^2.48.12"
+  }
+}
