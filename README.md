@@ -9,36 +9,27 @@ StableTap is a browser extension that simplifies the use of stablecoins deployed
 ## Usage
 
 * Clone this repo
-
 ```sh
 git clone https://github.com/bnonni/stable-tap.git
 ```
-
 * Install dependencies
-
 ```sh
 cd stable-tap
 npm install
 ```
-
 * Open Polar Lightning app and click "Import Network"
 * Drag `stable-tap.polar.zip` into Polar and load the network
 * Open the `stable-tap` network in Polar and click "Start"
-
 * Build `stable-tap` project code
-
 ```sh
 npm run build
 ```
-
 * Run start
-
 ```sh
 npm start
 ```
 
 ## Notes
 
-* You will see a folder called "app" where I attempted to make this a web application, but I ran out of time.
-* You will see a branch called `browser-extension/chrome` where I attempted to package this into a browser extension, but I ran out of time.
-* A future iteration would be a fully functional cross-browser extension wallet app per the GTM strategy.
+* You will see a folder called "app" where I'm extending this into a web application.
+* You will see a branch called `browser-extension/chrome` where I'm extending this to a chrome browser extension.
