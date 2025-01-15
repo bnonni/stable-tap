@@ -31,5 +31,5 @@ npm start
 
 ## Notes
 
-* You will see a folder called "app" where I'm extending this into a web application.
+* You will see a folder called `app` where I'm extending this into a web application.
 * You will see a branch called `browser-extension/chrome` where I'm extending this to a chrome browser extension.
